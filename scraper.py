@@ -1,13 +1,41 @@
 import re
 from urllib.parse import urlparse
 
-def scraper(url: str, resp: utils.response.Response):
+def scraper(url: str, resp) -> list:
     links = extract_next_links(url, resp)
     return [link for link in links if is_valid(link)]
 
-def extract_next_links(url, resp):
-    # Implementation requred.
-    return list()
+
+def tokenize_html(html_content: str) -> list:
+	valid_characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;="
+	res = []
+
+	token = ""
+	#token will be a variable where valid characters will be
+	#concatenated up until there is an invalid character
+
+	for char in html_content:
+		#going through every character preset in the word that is
+		#currently being looked at, O(n) time complexity
+		if char in valid_characters:
+			#if the character that is currently being looked at is
+			#an alphanumeric character then execute this if
+			token += char
+		else:
+			if not token == "":
+				res.append(token)
+				token = ""
+
+	for i in res:
+		print(i)	
+
+
+	return res
+
+def extract_next_links(url: str, resp):
+	if type(resp) == None: return []
+	return tokenize_html(resp.raw_response.text)
+
 
 def is_valid(url):
     try:
@@ -27,3 +55,5 @@ def is_valid(url):
     except TypeError:
         print ("TypeError for ", parsed)
         raise
+
+
