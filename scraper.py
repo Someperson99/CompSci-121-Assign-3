@@ -7,28 +7,17 @@ def scraper(url: str, resp) -> list:
 
 
 def tokenize_html(html_content: str) -> list:
-	valid_characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;="
 	res = []
 
-	token = ""
-	#token will be a variable where valid characters will be
-	#concatenated up until there is an invalid character
 
-	for char in html_content:
-		#going through every character preset in the word that is
-		#currently being looked at, O(n) time complexity
-		if char in valid_characters:
-			#if the character that is currently being looked at is
-			#an alphanumeric character then execute this if
-			token += char
-		else:
-			if not token == "":
-				res.append(token)
-				token = ""
+	res = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\), ]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', html_content) 
+
 
 	for i in res:
-		print(i)	
+		print(i)
 
+
+	print("\n\n done \n\n")
 
 	return res
 
