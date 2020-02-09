@@ -1,24 +1,30 @@
 import re
 from urllib.parse import urlparse
+from bs4 import BeautifulSoup
+
+viable_links = ["ics.uci.edu", "cs.uci.edu",
+				"informatics.uci.edu", "stat.uci.edu",
+				"today.uci.edu/department/information_computer_sciences"]
 
 def scraper(url: str, resp) -> list:
     links = extract_next_links(url, resp)
+    asdf = input()
     return [link for link in links if is_valid(link)]
 
 
 def tokenize_html(html_content: str) -> list:
-	res = []
-	res = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\), ]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', html_content)
+	res= []
 
-	print("\n\n", len(res))
+	soup = BeautifulSoup(html_content, features = 'html.parser')
+	links = soup.findAll('a')
 
-	for i in res:
-		if is_valid(i) == False:
-			res.remove(i)
-
-	print("\n\n", len(res))
-
-	print("\n\n done \n\n")
+	for link in links:
+		href_attr = link.get('href')
+		if is_valid(href_attr):
+			for i in viable_links:
+				if i in href_attr:
+					res.append(href_attr)
+					break
 
 	for i in res:
 		print(i)
@@ -27,6 +33,8 @@ def tokenize_html(html_content: str) -> list:
 
 def extract_next_links(url: str, resp):
 	if type(resp) == None: return []
+	if resp.status in range()
+	# print(resp.raw_response.text)
 	return tokenize_html(resp.raw_response.text)
 
 
@@ -35,6 +43,9 @@ def is_valid(url):
         parsed = urlparse(url)
         if parsed.scheme not in set(["http", "https"]):
             return False
+
+
+
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
@@ -50,3 +61,8 @@ def is_valid(url):
         raise
 
 
+# res = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\), ]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', html_content)
+
+# regex = "\.(css|js|bmp|gif|jpe?g|ico|png|tiff?|mid|mp2|mp3|mp4|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf|ps|eps|tex|ppt|pptx|doc|docx|xls|xlsx|names|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso|epub|dll|cnf|tgz|shal|thmx|mso|arff|rtf|jar|csv|rm|smil|wmv|swf|wma|zip|rar|gz)$"
+
+# print("\n\n")
