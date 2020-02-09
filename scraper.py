@@ -8,16 +8,20 @@ def scraper(url: str, resp) -> list:
 
 def tokenize_html(html_content: str) -> list:
 	res = []
+	res = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\), ]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', html_content)
 
+	print("\n\n", len(res))
 
-	res = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\), ]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', html_content) 
+	for i in res:
+		if is_valid(i) == False:
+			res.remove(i)
 
+	print("\n\n", len(res))
+
+	print("\n\n done \n\n")
 
 	for i in res:
 		print(i)
-
-
-	print("\n\n done \n\n")
 
 	return res
 
