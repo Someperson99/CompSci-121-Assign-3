@@ -1,6 +1,6 @@
 import re
 from urllib.parse import urlparse
-import urllib.robotparse as RFP
+import urllib.robotparser as RFP
 from bs4 import BeautifulSoup
 
 viable_links = ["ics.uci.edu", "cs.uci.edu",
