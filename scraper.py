@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 viable_links = ["ics.uci.edu", "cs.uci.edu",
 				"informatics.uci.edu", "stat.uci.edu",
 				"today.uci.edu/department/information_computer_sciences"]
+                
 
 def scraper(url: str, resp) -> list:
     links = extract_next_links(url, resp)
@@ -13,27 +14,26 @@ def scraper(url: str, resp) -> list:
 
 
 def tokenize_html(html_content: str) -> list:
-	res= []
+    res = []
 
-	soup = BeautifulSoup(html_content, features = 'html.parser')
-	links = soup.findAll('a')
+    soup = BeautifulSoup(html_content, features = 'html_parser')
+    links = soup.findAll('a')
 
-	for link in links:
-		href_attr = link.get('href')
-		if is_valid(href_attr):
-			for i in viable_links:
-				if i in href_attr:
-					res.append(href_attr)
-					break
+    for link in links:
+        href_attr = link.get('href')
+        if is_valid(href_attr):
+            for i in viable_links:
+                if i in href_attr:
+                    res.append(href_attr)
+                    break
+	# for i in res:
+	# 	print(i)
 
-	for i in res:
-		print(i)
-
-	return res
+	# return res
 
 def extract_next_links(url: str, resp):
 	if type(resp) == None: return []
-	if resp.status in range()
+	if resp.status not in range(100, 300): return []
 	# print(resp.raw_response.text)
 	return tokenize_html(resp.raw_response.text)
 
@@ -43,7 +43,6 @@ def is_valid(url):
         parsed = urlparse(url)
         if parsed.scheme not in set(["http", "https"]):
             return False
-
 
 
         return not re.match(
