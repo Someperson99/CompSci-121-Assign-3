@@ -1,13 +1,27 @@
 import re
 from urllib.parse import urlparse
+import urllib.robotparse as RFP
 from bs4 import BeautifulSoup
 
 viable_links = ["ics.uci.edu", "cs.uci.edu",
 				"informatics.uci.edu", "stat.uci.edu",
 				"today.uci.edu/department/information_computer_sciences"]
-                
+
+useragent = "IR W20 80993556 63354188"
+
+def robot_allow(url):
+    url_parsed = urlparse(url)
+    robots_url = url.scheme + "://" + url.netloc + "/robots.txt"
+
+    x = RFP.RobotFileParser()
+    x.set_url(robots_url)
+    x.read()
+    return x.can_fetch(useragent, url)
+
+
 
 def scraper(url: str, resp) -> list:
+    if not robot_allow(url): return []
     links = extract_next_links(url, resp)
     asdf = input()
     return [link for link in links if is_valid(link)]
