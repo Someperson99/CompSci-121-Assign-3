@@ -7,12 +7,23 @@ from queue import Queue, Empty
 from utils import get_logger, get_urlhash, normalize
 from scraper import is_valid
 
+from collections import defaultdict
+import urllib.request
+
+from bs4 import BeautifulSoup
+from bs4.element import Comment
+import urllib.request
+
+
 class Frontier(object):
     def __init__(self, config, restart):
         self.logger = get_logger("FRONTIER")
         self.config = config
         self.to_be_downloaded = list()
-        
+        self.discovered_urls = defaultdict(int)
+        self.site_checksum = {}
+        self.site_content = {}
+
         if not os.path.exists(self.config.save_file) and not restart:
             # Save file does not exist, but request to load save.
             self.logger.info(
@@ -59,14 +70,43 @@ class Frontier(object):
         if urlhash not in self.save:
             self.save[urlhash] = (url, False)
             self.save.sync()
-            self.to_be_downloaded.append(url)
-    
+            self.discovered_urls[url] += 1
+            # print(str(self.discovered_urls[url]))
+            if self.discovered_urls[url] == 1:
+                self.to_be_downloaded.append(url)
+
+                # print("added " + url + " with value: " + str(self.discovered_urls[url]))
+            # else:
+            #     print("\n\n" + url + "IS A DUPLICATE\n\n")
+
     def mark_url_complete(self, url):
         urlhash = get_urlhash(url)
         if urlhash not in self.save:
             # This should not happen.
             self.logger.error(
                 f"Completed url {url}, but have not seen it before.")
-
         self.save[urlhash] = (url, True)
         self.save.sync()
+
+    def get_url_text_content(self, url):
+        res = ""
+        html_content = urllib.request.urlopen(url, timeout=10).read()
+        soup = BeautifulSoup(html_content, features="html_parser")
+        text_content = soup.findAll(text=True)
+        for i in text_content:
+            if i.parent.name not in ['stye', 'script', 'head', 'title', 'meta' '[document]'] and\
+                not isinstance(i.parent.name, Comment):
+                res += i.strip(
+
+        print(res)
+
+
+
+
+    # def check_sum_value(url) -> int:
+    #     response = urllib.request.urlopen(url).read().decode("utf-8")
+    #     soup = BeautifulSoup(response, features='html_parser')
+    #     text = soup.get_text().decode('utf-8')
+    #     text = str.encode(text)
+    #
+    #     response.close()
