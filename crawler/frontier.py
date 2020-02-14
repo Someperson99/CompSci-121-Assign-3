@@ -20,8 +20,14 @@ class Frontier(object):
         self.logger = get_logger("FRONTIER")
         self.config = config
         self.to_be_downloaded = list()
+
+        #store all the urls that have been downloaded already so
+        #that the same url isn't downloaded twice
         self.discovered_urls = defaultdict(int)
+        #dictionary that would contain a key value pair of the checksum value
+        #and url
         self.site_checksum = {}
+        #key value pairs of urls and the text contained in them
         self.site_content = {}
 
         if not os.path.exists(self.config.save_file) and not restart:
@@ -74,6 +80,7 @@ class Frontier(object):
             # print(str(self.discovered_urls[url]))
             if self.discovered_urls[url] == 1:
                 self.to_be_downloaded.append(url)
+                self.get_url_text_content(url)
 
                 # print("added " + url + " with value: " + str(self.discovered_urls[url]))
             # else:
@@ -88,20 +95,32 @@ class Frontier(object):
         self.save[urlhash] = (url, True)
         self.save.sync()
 
-    def get_url_text_content(self, url):
-        res = ""
-        html_content = urllib.request.urlopen(url, timeout=10).read()
-        soup = BeautifulSoup(html_content, features="html_parser")
+    def store_page_text_content(self, resp):
+
+
+    def get_url_text_content(self, resp):
+        #given a raw response the function will use BeautifulSoup to
+        #take out all of the relevant text, will the concatenate all
+        #of the text and then return it. To filter what is valuable
+        #text and what is not is handled by self.filter_text
+
+        soup = BeautifulSoup(resp, features="lxml")
         text_content = soup.findAll(text=True)
-        for i in text_content:
-            if i.parent.name not in ['stye', 'script', 'head', 'title', 'meta' '[document]'] and\
-                not isinstance(i.parent.name, Comment):
-                res += i.strip(
+        relevant_text = filter(self.filter_text, text_content)
+        print(u" ".join(i.strip() for i in relevant_text))
+        return u" ".join(i.strip() for i in relevant_text)
 
-        print(res)
-
-
-
+    def filter_text(self, unfiltered_text):
+        #found the tags that don't hold valuable text from
+        #https://stackoverflow.com/questions/1936466/beautifulsoup-grab-visible-webpage-text
+        # as well as
+        #https://matix.io/extract-text-from-webpage-using-beautifulsoup-and-python/
+        if unfiltered_text.parent.name in ['style', 'script', 'noscript', 'header'\
+                                           'head', 'title', 'meta', '[document]', 'html', 'input']:
+            return False
+        if isinstance(unfiltered_text, Comment):
+            return False
+        return True
 
     # def check_sum_value(url) -> int:
     #     response = urllib.request.urlopen(url).read().decode("utf-8")
