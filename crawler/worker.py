@@ -20,13 +20,18 @@ class Worker(Thread):
             if not tbd_url:
                 self.logger.info("Frontier is empty. Stopping Crawler.")
                 break
+            #put the response = download into a try except, in case there is a timeout
+            #and resp doesn't equal anything
             resp = download(tbd_url, self.config, self.logger)
+
             self.logger.info(
                 f"Downloaded {tbd_url}, status <{resp.status}>, "
                 f"using cache {self.config.cache_server}.")
+
+
             #after getting the response from the webpage, the function will
-            #store the information in the self.frontier instance
-            self.frontier.store_page_text_content(resp)
+            #store the information in the self.frontier
+            self.frontier.store_page_text_content(resp.raw_response, tbd_url)
 
             scraped_urls = scraper(tbd_url, resp)
             for scraped_url in scraped_urls:

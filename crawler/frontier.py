@@ -95,7 +95,14 @@ class Frontier(object):
         self.save[urlhash] = (url, True)
         self.save.sync()
 
-    def store_page_text_content(self, resp):
+
+    def store_page_text_content(self, resp, url):
+        #is a method to insert the url and associate it with the value which would
+        #be all of the text content in the page by calling self.get_url_text_content
+        #will be stored in self.site_content
+        self.get_url_text_content(resp)
+        print(url)
+        pass
 
 
     def get_url_text_content(self, resp):
@@ -104,7 +111,7 @@ class Frontier(object):
         #of the text and then return it. To filter what is valuable
         #text and what is not is handled by self.filter_text
 
-        soup = BeautifulSoup(resp, features="lxml")
+        soup = BeautifulSoup(resp, features="html.parser")
         text_content = soup.findAll(text=True)
         relevant_text = filter(self.filter_text, text_content)
         print(u" ".join(i.strip() for i in relevant_text))
