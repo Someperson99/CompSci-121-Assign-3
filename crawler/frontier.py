@@ -26,7 +26,13 @@ class Frontier(object):
         self.discovered_urls = defaultdict(int)
         # dictionary that would contain a key value pair of the checksum value
         # and url
+        
+        # Dictionary of word as key and it's frequency as value
+        self.word_frequencies = defualtdict(int)
+        
+        
         self.site_checksum = {}
+        
         # key value pairs of urls and the text contained in them
         self.site_content = {}
 
@@ -80,6 +86,7 @@ class Frontier(object):
             # print(str(self.discovered_urls[url]))
             if self.discovered_urls[url] == 1:
                 self.to_be_downloaded.append(url)
+                
 
                 # print("added " + url + " with value: " + str(self.discovered_urls[url]))
             # else:
@@ -98,9 +105,7 @@ class Frontier(object):
         # is a method to insert the url and associate it with the value which would
         # be all of the text content in the page by calling self.get_url_text_content
         # will be stored in self.site_content
-        self.get_url_text_content(resp)
-        print(url)
-        return
+        self.site_content[url] = self.get_url_text_content(resp)
 
     def tokenize(self, text):
         token_lst = []
@@ -109,6 +114,7 @@ class Frontier(object):
             alpha_lst = re.split(r'[^a-zA-Z0-9]+', line)
             for i in list(filter(lambda w: re.match(r'[a-zA-Z0-9]+', w), alpha_lst)):
                 token_lst.append(i.lower())
+                self.word_frequencies[i.lower()] += 1
         return token_lst
 
 
