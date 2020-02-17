@@ -12,6 +12,7 @@ import urllib.request
 
 from bs4 import BeautifulSoup
 from bs4.element import Comment
+import re
 
 
 class Frontier(object):
@@ -101,17 +102,25 @@ class Frontier(object):
         print(url)
         return
 
+    def tokenize(self, text):
+        token_lst = []
+        for line in text:
+            print(line)
+            alpha_lst = re.split(r'[^a-zA-Z0-9]+', line)
+            for i in list(filter(lambda w: re.match(r'[a-zA-Z0-9]+', w), alpha_lst)):
+                token_lst.append(i.lower())
+        return token_lst
+
+
     def get_url_text_content(self, resp):
         # given a raw response the function will use BeautifulSoup to
         # take out all of the relevant text, will the concatenate all
         # of the text and then return it. To filter what is valuable
         # text and what is not is handled by self.filter_text
-
         soup = BeautifulSoup(resp.raw_response.text, features="html.parser")
         text_content = soup.findAll(text=True)
         relevant_text = filter(self.filter_text, text_content)
-        print(u" ".join(i.strip() for i in relevant_text))
-        return u" ".join(i.strip() for i in relevant_text)
+        return self.tokenize(text_content)
 
     def filter_text(self, unfiltered_text):
         # found the tags that don't hold valuable text from
