@@ -1,9 +1,9 @@
 import re
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urldefrag
 import urllib.robotparser as RFP
 from bs4 import BeautifulSoup
 
-viable_links = ["ics.uci.edu", "cs.uci.edu",
+viable_domains = ["ics.uci.edu", "cs.uci.edu",
                 "informatics.uci.edu", "stat.uci.edu",
                 "today.uci.edu/department/information_computer_sciences"]
 
@@ -31,6 +31,9 @@ def scraper(url: str, resp) -> list:
 
 
 def tokenize_html(html_content: str) -> list:
+    '''given a raw_response that is decoded (string) that represents
+    html the tokenizer finds all of the links that are in the html string
+    and then puts them all into res, removes the fragment of the links'''
     res = []
 
     soup = BeautifulSoup(html_content, features='html.parser')
@@ -39,9 +42,10 @@ def tokenize_html(html_content: str) -> list:
     for link in links:
         href_attr = link.get('href')
         if is_valid(href_attr):
-            for i in viable_links:
-                if i in href_attr:
-                    res.append(href_attr)
+            for i in viable_domains:
+                href_attr = urldefrag(href_attr)
+                if i in href_attr[0]:
+                    res.append(href_attr[0])
                     break
     return res
 

@@ -28,6 +28,10 @@ class Worker(Thread):
                 f"Downloaded {tbd_url}, status <{resp.status}>, "
                 f"using cache {self.config.cache_server}.")
 
+
+
+
+
             # after getting the response from the webpage, the function will
             # store the information in the self.frontier
             self.frontier.store_page_text_content(resp, tbd_url)
