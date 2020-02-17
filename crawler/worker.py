@@ -30,7 +30,9 @@ class Worker(Thread):
 
             # after getting the response from the webpage, the function will
             # store the information in the self.frontier
-            self.frontier.store_page_text_content(resp.raw_response, tbd_url)
+            self.frontier.store_page_text_content(resp, tbd_url)
+
+
 
             scraped_urls = scraper(tbd_url, resp)
             for scraped_url in scraped_urls:
