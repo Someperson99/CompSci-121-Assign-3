@@ -98,7 +98,9 @@ class Frontier(object):
         # is a method to insert the url and associate it with the value which would
         # be all of the text content in the page by calling self.get_url_text_content
         # will be stored in self.site_content
-        self.site_content[url] = self.get_url_text_content(resp)
+        if(resp.raw_response is not None):
+            if resp.status in range(100,300):
+                self.site_content[url] = self.get_url_text_content(resp)
 
     def tokenize(self, text):
         token_lst = []

@@ -24,6 +24,7 @@ def robot_allow(url):
 
 
 def scraper(url: str, resp) -> list:
+    if resp.status not in range(100,400): return []
     if not robot_allow(url): return []
     # asdf = input()
 
@@ -44,8 +45,9 @@ def tokenize_html(html_content: str) -> list:
         href_attr = link.get('href')
         if is_valid(href_attr):
             href_attr = urldefrag(href_attr)
+            x = urlparse(href_attr.url)
             for i in viable_domains:
-                if i in href_attr.url:
+                if i in x.netloc:
                     res.append(str(href_attr.url))
                     break
     return res
@@ -54,7 +56,7 @@ def tokenize_html(html_content: str) -> list:
 def extract_next_links(url: str, resp):
     if type(resp) is None:
         return []
-    if resp.status not in range(100, 300):
+    if resp.status not in range(100, 400):
         return []
     return tokenize_html(resp.raw_response.text)
 
@@ -63,6 +65,12 @@ def is_valid(url):
     try:
         parsed = urlparse(url)
         if parsed.scheme not in {"http", "https"}:
+            return False
+        if "/pdf/" in url:
+            return False
+        if parsed.netloc in {"http:", "https:"}:
+            return False
+        if "replytocom" in parsed.query:
             return False
 
         return not re.match(
