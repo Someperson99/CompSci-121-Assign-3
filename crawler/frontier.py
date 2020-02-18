@@ -26,13 +26,12 @@ class Frontier(object):
         self.discovered_urls = defaultdict(int)
         # dictionary that would contain a key value pair of the checksum value
         # and url
-        
+
         # Dictionary of word as key and it's frequency as value
-        self.word_frequencies = defualtdict(int)
-        
-        
+        self.word_frequencies = defaultdict(int)
+
         self.site_checksum = {}
-        
+
         # key value pairs of urls and the text contained in them
         self.site_content = {}
 
@@ -83,14 +82,8 @@ class Frontier(object):
             self.save[urlhash] = (url, False)
             self.save.sync()
             self.discovered_urls[url] += 1
-            # print(str(self.discovered_urls[url]))
             if self.discovered_urls[url] == 1:
                 self.to_be_downloaded.append(url)
-                
-
-                # print("added " + url + " with value: " + str(self.discovered_urls[url]))
-            # else:
-            #     print("\n\n" + url + "IS A DUPLICATE\n\n")
 
     def mark_url_complete(self, url):
         urlhash = get_urlhash(url)
@@ -110,13 +103,11 @@ class Frontier(object):
     def tokenize(self, text):
         token_lst = []
         for line in text:
-            print(line)
             alpha_lst = re.split(r'[^a-zA-Z0-9]+', line)
             for i in list(filter(lambda w: re.match(r'[a-zA-Z0-9]+', w), alpha_lst)):
                 token_lst.append(i.lower())
                 self.word_frequencies[i.lower()] += 1
         return token_lst
-
 
     def get_url_text_content(self, resp):
         # given a raw response the function will use BeautifulSoup to
@@ -133,7 +124,7 @@ class Frontier(object):
         # https://stackoverflow.com/questions/1936466/beautifulsoup-grab-visible-webpage-text
         # as well as
         # https://matix.io/extract-text-from-webpage-using-beautifulsoup-and-python/
-        if unfiltered_text.parent.name in ['style', 'script', 'noscript', 'header' \
+        if unfiltered_text.parent.name in ['style', 'script', 'noscript', 'header',
                                             'head', 'title', 'meta', '[document]', 'html',
                                            'input']:
             return False

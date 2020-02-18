@@ -25,7 +25,8 @@ def robot_allow(url):
 
 def scraper(url: str, resp) -> list:
     if not robot_allow(url): return []
-    asdf = input()
+    # asdf = input()
+
     links = extract_next_links(url, resp)
     return [link for link in links if is_valid(link)]
 
@@ -42,10 +43,10 @@ def tokenize_html(html_content: str) -> list:
     for link in links:
         href_attr = link.get('href')
         if is_valid(href_attr):
+            href_attr = urldefrag(href_attr)
             for i in viable_domains:
-                href_attr = urldefrag(href_attr)
-                if i in href_attr[0]:
-                    res.append(href_attr[0])
+                if i in href_attr.url:
+                    res.append(str(href_attr.url))
                     break
     return res
 
@@ -55,7 +56,6 @@ def extract_next_links(url: str, resp):
         return []
     if resp.status not in range(100, 300):
         return []
-    # print(resp.raw_response.text)
     return tokenize_html(resp.raw_response.text)
 
 
@@ -78,11 +78,3 @@ def is_valid(url):
     except TypeError:
         print("TypeError for ", parsed)
         raise
-
-# res = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\), ]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', html_content)
-
-# regex = "\.(css|js|bmp|gif|jpe?g|ico|png|tiff?|mid|mp2|mp3|mp4|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf|ps|eps|tex
-# |ppt|pptx|doc|docx|xls|xlsx|names|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso|epub|dll|cnf|tgz|shal|thmx|mso|arff
-# |rtf|jar|csv|rm|smil|wmv|swf|wma|zip|rar|gz)$"
-
-# print("\n\n")
