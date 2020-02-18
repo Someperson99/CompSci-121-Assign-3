@@ -83,6 +83,7 @@ class Frontier(object):
             self.save[urlhash] = (url, False)
             self.save.sync()
             self.discovered_urls[url] += 1
+
             if self.discovered_urls[url] == 1:
                 self.to_be_downloaded.append(url)
 

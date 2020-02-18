@@ -95,6 +95,7 @@ class Worker(Thread):
 
         print(unique_pages(self.frontier.discovered_urls))
         print(longest_page(self.frontier.site_content))
+        print(fifty_most_common_words(self.frontier.word_frequencies))
         print(ics_subdomain_frequencies(self.frontier.discovered_urls))
 
 

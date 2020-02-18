@@ -74,15 +74,40 @@ def is_valid(url):
         if "replytocom" in parsed.query:
             return False
 
-        return not re.match(
+
+        path_match = not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
             + r"|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf"
             + r"|ps|eps|tex|ppt|pptx|doc|docx|xls|xlsx|names"
             + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
-            + r"|epub|dll|cnf|tgz|sha1"
+            + r"|epub|dll|cnf|tgz|sha1|ppsx"
             + r"|thmx|mso|arff|rtf|jar|csv"
             + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower())
+
+        query_match = path_match = not re.match(
+            r".*\.(css|js|bmp|gif|jpe?g|ico"
+            + r"|png|tiff?|mid|mp2|mp3|mp4"
+            + r"|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf"
+            + r"|ps|eps|tex|ppt|pptx|doc|docx|xls|xlsx|names"
+            + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
+            + r"|epub|dll|cnf|tgz|sha1|ppsx"
+            + r"|thmx|mso|arff|rtf|jar|csv"
+            + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.query.lower())
+
+        date_match = not re.search(r"(\/[0-9][0-9][0-9][0-9]-[0-9][0-9](-[0-9]*)*\/*)$",
+                              parsed.path.lower())
+
+        if date_match is False:
+            return date_match
+
+        page_match = not re.search(r"/page/([0-9]+\/*)$", parsed.path)
+
+        if page_match is False:
+            return page_match
+
+
+        return query_match and path_match
 
     except TypeError:
         print("TypeError for ", parsed)
