@@ -39,6 +39,7 @@ def tokenize_html(html_content: str) -> list:
     res = []
 
     soup = BeautifulSoup(html_content, features='html.parser')
+
     links = soup.findAll('a')
 
     for link in links:

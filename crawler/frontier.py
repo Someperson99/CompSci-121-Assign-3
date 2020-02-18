@@ -30,6 +30,7 @@ class Frontier(object):
         # Dictionary of word as key and it's frequency as value
         self.word_frequencies = defaultdict(int)
 
+
         self.site_checksum = {}
 
         # key value pairs of urls and the text contained in them
@@ -133,11 +134,3 @@ class Frontier(object):
         if isinstance(unfiltered_text, Comment):
             return False
         return True
-
-    # def check_sum_value(url) -> int:
-    #     response = urllib.request.urlopen(url).read().decode("utf-8")
-    #     soup = BeautifulSoup(response, features='html_parser')
-    #     text = soup.get_text().decode('utf-8')
-    #     text = str.encode(text)
-    #
-    #     response.close()
