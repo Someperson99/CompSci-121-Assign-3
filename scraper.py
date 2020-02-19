@@ -62,10 +62,8 @@ def tokenize_html(html_content: str) -> list:
         if is_valid(href_attr):
             href_attr = urldefrag(href_attr)
             x = urlparse(href_attr.url)
-            for i in viable_domains:
-                if is_subdomain(x):
-                    res.append(str(href_attr.url))
-                    break
+            if is_subdomain(x):
+                res.append(str(href_attr.url))
     return res
 
 
