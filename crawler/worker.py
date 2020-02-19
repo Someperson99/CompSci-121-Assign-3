@@ -19,13 +19,13 @@ from nltk.corpus import stopwords
 
 
 def unique_pages(url_list):
-    # url_list is a list of the urls we have crawled
-    unique_netlocs = set()
-    for link in url_list:
-        # adds the unique domains into unique_netlocs
-        unique_netlocs.add(urlparse(link)[1])
-    # returns the len() of the set which is the amount of unique pages present
-    return len(unique_netlocs)
+    # # url_list is a list of the urls we have crawled
+    # unique_netlocs = set()
+    # for link in url_list:
+    #     # adds the unique domains into unique_netlocs
+    #     unique_netlocs.add(urlparse(link)[1])
+    # # returns the len() of the set which is the amount of unique pages present
+    return len(url_list)
 
 
 """ 2. What is the longest page in terms of number of words? (HTML markup doesn’t count as words)"""
@@ -93,8 +93,8 @@ class Worker(Thread):
             self.frontier.mark_url_complete(tbd_url)
             time.sleep(self.config.time_delay)
 
-        print(unique_pages(self.frontier.discovered_urls))
-        print(longest_page(self.frontier.site_content))
+        print("number of unique pages is:", unique_pages(self.frontier.discovered_urls))
+        print("longest page is:", longest_page(self.frontier.site_content))
         print(fifty_most_common_words(self.frontier.word_frequencies))
         print(ics_subdomain_frequencies(self.frontier.discovered_urls))
 
