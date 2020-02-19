@@ -83,7 +83,7 @@ def is_valid(url):
             + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
             + r"|epub|dll|cnf|tgz|sha1|ppsx"
             + r"|thmx|mso|arff|rtf|jar|csv"
-            + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower())
+            + r"|rm|smil|wmv|swf|wma|zip|rar|gz)\/*$", parsed.path.lower())
 
         query_match = path_match = not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
@@ -93,7 +93,7 @@ def is_valid(url):
             + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
             + r"|epub|dll|cnf|tgz|sha1|ppsx"
             + r"|thmx|mso|arff|rtf|jar|csv"
-            + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.query.lower())
+            + r"|rm|smil|wmv|swf|wma|zip|rar|gz)\/*$", parsed.query.lower())
 
         date_match = not re.search(r"(\/[0-9][0-9][0-9][0-9]-[0-9][0-9](-[0-9]*)*\/*)$",
                               parsed.path.lower())
@@ -102,6 +102,12 @@ def is_valid(url):
             return date_match
 
         page_match = not re.search(r"/page/([0-9]+\/*)$", parsed.path)
+
+        if "ical=1" in parsed.query.lower():
+            return False
+
+        if "share=" in parsed.query.lower():
+            return False
 
         if page_match is False:
             return page_match
