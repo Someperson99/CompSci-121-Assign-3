@@ -32,6 +32,21 @@ def scraper(url: str, resp) -> list:
     return [link for link in links if is_valid(link)]
 
 
+def is_subdomain(url):
+    if url.netloc != "today.uci.edu":
+        cs_match = r"([a-z]+\.)*cs\.uci\.edu"
+        ics_match = r"([a-z]+\.)*ics\.uci\.edu"
+        informatics_match = r"([a-z]+\.)*informatics\.uci\.edu"
+        stats_match = r"([a-z]+\.)*stats\.uci\.edu"
+
+        if re.match(cs_match, url) or re.match(ics_match, url) or \
+            re.match(informatics_match, url) or re.match(stats_match):
+            return True
+        return False
+    else:
+        if "/department/information_computer_sciences" in url.path.lower():
+            return True
+
 def tokenize_html(html_content: str) -> list:
     '''given a raw_response that is decoded (string) that represents
     html the tokenizer finds all of the links that are in the html string
@@ -48,7 +63,7 @@ def tokenize_html(html_content: str) -> list:
             href_attr = urldefrag(href_attr)
             x = urlparse(href_attr.url)
             for i in viable_domains:
-                if i in x.netloc:
+                if is_subdomain(x):
                     res.append(str(href_attr.url))
                     break
     return res
