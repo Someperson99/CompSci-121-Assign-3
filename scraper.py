@@ -28,10 +28,12 @@ def scraper(url: str, resp) -> list:
 
 
 def is_subdomain(url):
-        site_match = r"(www\.([a-z]+\.+)*(cs\.uci\.edu|ics\.uci\.edu|www\.stat\.uci\.edu|www\.informatics\.uci\.edu)"
-        url = url.netloc
+        site_match = r"(www\.([a-z]+\.+)*(cs\.uci\.edu|ics\.uci\.edu|www\.stat\.uci\.edu|www\.informatics\.uci\.edu))"
+        new_url = url.netloc
 
-        if re.match(site_match, url):
+        matching = re.match(site_match, new_url)
+
+        if matching:
             return True
         return False
 
@@ -113,6 +115,8 @@ def is_valid(url):
 
         if page_match is False:
             return page_match
+
+        return True
 
 
     except TypeError:

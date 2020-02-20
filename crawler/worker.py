@@ -100,9 +100,9 @@ class Worker(Thread):
         print("longest page is:", longest_page(self.frontier.site_content))
         print("fifty most common words are here:",fifty_most_common_words(self.frontier.word_frequencies))
         print(ics_subdomain_frequencies(self.frontier.discovered_urls))
-
-        print("just in case here are all the urls that were discovered", self.frontier.discovered_urls, "\n")
-        print("and here are all the words and their frequencies", self.frontier.word_frequencies)
+        #
+        # print("just in case here are all the urls that were discovered", self.frontier.discovered_urls, "\n")
+        # print("and here are all the words and their frequencies", self.frontier.word_frequencies)
 
 
 
