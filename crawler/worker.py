@@ -87,16 +87,22 @@ class Worker(Thread):
             # after getting the response from the webpage, the function will
             # store the information in the self.frontier
             self.frontier.store_page_text_content(resp, tbd_url)
+
             scraped_urls = scraper(tbd_url, resp)
             for scraped_url in scraped_urls:
                 self.frontier.add_url(scraped_url)
             self.frontier.mark_url_complete(tbd_url)
             time.sleep(self.config.time_delay)
 
+        self.frontier.close_files()
+
         print("number of unique pages is:", unique_pages(self.frontier.discovered_urls))
         print("longest page is:", longest_page(self.frontier.site_content))
-        print(fifty_most_common_words(self.frontier.word_frequencies))
+        print("fifty most common words are here:",fifty_most_common_words(self.frontier.word_frequencies))
         print(ics_subdomain_frequencies(self.frontier.discovered_urls))
+
+        print("just in case here are all the urls that were discovered", self.frontier.discovered_urls, "\n")
+        print("and here are all the words and their frequencies", self.frontier.word_frequencies)
 
 
 

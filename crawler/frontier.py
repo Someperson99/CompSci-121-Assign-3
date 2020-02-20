@@ -30,11 +30,11 @@ class Frontier(object):
         # Dictionary of word as key and it's frequency as value
         self.word_frequencies = defaultdict(int)
 
-
-        self.site_checksum = {}
-
         # key value pairs of urls and the text contained in them
         self.site_content = {}
+
+        self.discovered_urls_text_file = open("discovered_urls.txt", 'w+')
+        self.all_words = open("discovered_words.txt", 'w+')
 
         if not os.path.exists(self.config.save_file) and not restart:
             # Save file does not exist, but request to load save.
@@ -85,6 +85,7 @@ class Frontier(object):
             self.discovered_urls[url] += 1
 
             if self.discovered_urls[url] == 1:
+                self.discovered_urls_text_file.write(url)
                 self.to_be_downloaded.append(url)
 
     def mark_url_complete(self, url):
@@ -101,7 +102,7 @@ class Frontier(object):
         # be all of the text content in the page by calling self.get_url_text_content
         # will be stored in self.site_content
         if(resp.raw_response is not None):
-            if resp.status in range(100,300):
+            if resp.status in range(100,400):
                 self.site_content[url] = self.get_url_text_content(resp)
 
     def tokenize(self, text):
@@ -111,6 +112,7 @@ class Frontier(object):
             for i in list(filter(lambda w: re.match(r'[a-zA-Z0-9]+', w), alpha_lst)):
                 token_lst.append(i.lower())
                 self.word_frequencies[i.lower()] += 1
+                self.all_words.write(i.lower())
         return token_lst
 
     def get_url_text_content(self, resp):
@@ -121,7 +123,7 @@ class Frontier(object):
         soup = BeautifulSoup(resp.raw_response.text, features="html.parser")
         text_content = soup.findAll(text=True)
         relevant_text = filter(self.filter_text, text_content)
-        return self.tokenize(text_content)
+        return self.tokenize(relevant_text)
 
     def filter_text(self, unfiltered_text):
         # found the tags that don't hold valuable text from
@@ -135,3 +137,7 @@ class Frontier(object):
         if isinstance(unfiltered_text, Comment):
             return False
         return True
+
+    def close_files(self):
+        self.discovered_urls_text_file.close()
+        self.all_words.close()

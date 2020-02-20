@@ -3,11 +3,9 @@ from urllib.parse import urlparse, urldefrag
 import urllib.robotparser as RFP
 from bs4 import BeautifulSoup
 
-viable_domains = ["ics.uci.edu", "cs.uci.edu",
-                "informatics.uci.edu", "stat.uci.edu",
-                "today.uci.edu/department/information_computer_sciences"]
-
 useragent = "IR W20 80993556 63354188"
+
+today_uci_pattern = r"http[s]?:\/\/today\.uci\.edu\/department\/information_computer_sciences"
 
 
 def robot_allow(url):
@@ -24,53 +22,41 @@ def robot_allow(url):
 
 
 def scraper(url: str, resp) -> list:
-    if resp.status not in range(100,400): return []
     if not robot_allow(url): return []
-    # asdf = input()
-
-    links = extract_next_links(url, resp)
+    links = extract_next_links(resp)
     return [link for link in links if is_valid(link)]
 
 
 def is_subdomain(url):
-    if url.netloc != "today.uci.edu":
-        cs_match = r"([a-z]+\.)*cs\.uci\.edu"
-        ics_match = r"([a-z]+\.)*ics\.uci\.edu"
-        informatics_match = r"([a-z]+\.)*informatics\.uci\.edu"
-        stats_match = r"([a-z]+\.)*stats\.uci\.edu"
+        site_match = r"(www\.([a-z]+\.+)*(cs\.uci\.edu|ics\.uci\.edu|www\.stat\.uci\.edu|www\.informatics\.uci\.edu)"
+        url = url.netloc
 
-        if re.match(cs_match, url) or re.match(ics_match, url) or \
-            re.match(informatics_match, url) or re.match(stats_match):
+        if re.match(site_match, url):
             return True
         return False
-    else:
-        if "/department/information_computer_sciences" in url.path.lower():
-            return True
 
 def tokenize_html(html_content: str) -> list:
     '''given a raw_response that is decoded (string) that represents
     html the tokenizer finds all of the links that are in the html string
     and then puts them all into res, removes the fragment of the links'''
     res = []
-
     soup = BeautifulSoup(html_content, features='html.parser')
-
     links = soup.findAll('a')
 
     for link in links:
-        href_attr = link.get('href')
+        href_attr = urldefrag(link.get('href')).url
         if is_valid(href_attr):
-            href_attr = urldefrag(href_attr)
-            x = urlparse(href_attr.url)
-            if is_subdomain(x):
-                res.append(str(href_attr.url))
+            if re.search(today_uci_pattern, href_attr):
+                res.append(str(href_attr))
+            else:
+                x = urlparse(href_attr)
+                if is_subdomain(x):
+                    res.append(str(href_attr))
     return res
 
 
-def extract_next_links(url: str, resp):
+def extract_next_links(resp):
     if type(resp) is None:
-        return []
-    if resp.status not in range(100, 400):
         return []
     return tokenize_html(resp.raw_response.text)
 
@@ -108,6 +94,9 @@ def is_valid(url):
             + r"|thmx|mso|arff|rtf|jar|csv"
             + r"|rm|smil|wmv|swf|wma|zip|rar|gz)\/*$", parsed.query.lower())
 
+        if not query_match and path_match:
+            return False
+
         date_match = not re.search(r"(\/[0-9][0-9][0-9][0-9]-[0-9][0-9](-[0-9]*)*\/*)$",
                               parsed.path.lower())
 
@@ -125,8 +114,6 @@ def is_valid(url):
         if page_match is False:
             return page_match
 
-
-        return query_match and path_match
 
     except TypeError:
         print("TypeError for ", parsed)
