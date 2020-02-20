@@ -58,7 +58,7 @@ def tokenize_html(html_content: str) -> list:
 
 
 def extract_next_links(resp):
-    if type(resp) is None:
+    if not resp.raw_response:
         return []
     return tokenize_html(resp.raw_response.text)
 
