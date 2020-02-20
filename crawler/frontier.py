@@ -85,7 +85,7 @@ class Frontier(object):
             self.discovered_urls[url] += 1
 
             if self.discovered_urls[url] == 1:
-                self.discovered_urls_text_file.write(url)
+                self.discovered_urls_text_file.write(url + '\n')
                 self.to_be_downloaded.append(url)
 
     def mark_url_complete(self, url):
@@ -112,7 +112,7 @@ class Frontier(object):
             for i in list(filter(lambda w: re.match(r'[a-zA-Z0-9]+', w), alpha_lst)):
                 token_lst.append(i.lower())
                 self.word_frequencies[i.lower()] += 1
-                self.all_words.write(i.lower())
+                self.all_words.write(i.lower() + '\n')
         return token_lst
 
     def get_url_text_content(self, resp):
