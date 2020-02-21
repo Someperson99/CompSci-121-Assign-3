@@ -28,7 +28,7 @@ def scraper(url: str, resp) -> list:
 
 
 def is_subdomain(url):
-        site_match = r"((www|[a-z]+)\.(cs\.uci\.edu|ics\.uci\.edu|www\.stat\.uci\.edu|www\.informatics\.uci\.edu))"
+        site_match = r"((www|[a-z]+)\.(cs\.uci\.edu|ics\.uci\.edu|stat\.uci\.edu|informatics\.uci\.edu))"
         new_url = url.netloc
 
         matching = re.match(site_match, new_url)
