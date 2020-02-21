@@ -116,6 +116,9 @@ def is_valid(url):
         if page_match is False:
             return page_match
 
+        if parsed.netloc == "piki.ics.uci.edu" and parsed.path == "/ics125s04":
+            return False
+
         return True
 
 
